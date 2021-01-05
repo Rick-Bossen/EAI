@@ -1,11 +1,6 @@
 package infoborden;
 
-import javax.jms.Connection;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
+import javax.jms.*;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -28,6 +23,31 @@ public class ListenerStarter implements Runnable, ExceptionListener {
 		try {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
 					ActiveMQConnection.DEFAULT_BROKER_URL);
+
+			Connection connection = connectionFactory.createConnection();
+			connection.start();
+
+			//Creating a non transactional session to send/receive JMS message.
+			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+			//Destination represents here our queue 'JCG_QUEUE' on the JMS server.
+			//The queue will be created automatically on the server.
+			Destination destination = session.createQueue(subject);
+
+			// MessageConsumer is used for receiving (consuming) messages
+			MessageConsumer consumer = session.createConsumer(destination);
+
+			// Here we receive the message.
+			Message message = consumer.receive();
+
+			// We will be using TestMessage in our example. MessageProducer sent us a TextMessage
+			// so we must cast to it to get access to its .getText() method.
+			if (message instanceof TextMessage) {
+				TextMessage textMessage = (TextMessage) message;
+				System.out.println("Received message '" + textMessage.getText() + "'");
+			}
+			connection.close();
+
 //			TODO maak de connection aan
 //          Connection connection = ?????;
 //          connection.start();
