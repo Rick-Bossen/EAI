@@ -24,7 +24,7 @@ public class Bus {
 	}
 
 	public void setbusID(int starttijd) {
-		this.busID = starttijd + lijn.name() + richting;
+		this.busID = starttijd + lijn.name() + "R" +richting;
 	}
 
 	public void naarVolgendeHalte() {
@@ -99,7 +99,7 @@ public class Bus {
 
 	public void sendBericht(Bericht bericht) {
 		XStream xstream = new XStream();
-		xstream.alias("bericht",Bericht.class);
+		xstream.alias("Bericht",Bericht.class);
 		xstream.alias("ETA",ETA.class);
 		String xml = xstream.toXML(bericht);
 

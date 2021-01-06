@@ -1,11 +1,6 @@
 package infoborden;
 
-import javax.jms.Connection;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
+import javax.jms.*;
 
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -28,19 +23,14 @@ public class ListenerStarter implements Runnable, ExceptionListener {
 		try {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
 					ActiveMQConnection.DEFAULT_BROKER_URL);
-//			TODO maak de connection aan
-//          Connection connection = ?????;
-//          connection.start();
-//          connection.setExceptionListener(this);
-//			TODO maak de session aan
-//          Session session = ?????;
-//			TODO maak de destination aan
-//          Destination destination = ?????;
-//			TODO maak de consumer aan
-//          MessageConsumer consumer = ?????;
+			Connection connection = connectionFactory.createConnection();
+			connection.start();
+
+			Session session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+			Destination destination = session.createQueue(selector);
+			MessageConsumer consumer = session.createConsumer(destination);
+			consumer.setMessageListener(new QueueListener(selector, infobord, berichten));
 			System.out.println("Produce, wait, consume" + selector);
-//			TODO maak de Listener aan
-//          consumer.?????;
 		} catch (Exception e) {
 			System.out.println("Caught: " + e);
 			e.printStackTrace();
